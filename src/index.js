@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
       })
       .set(stickyEl, {
-        overflow: hidden,
+        overflow: 'hidden',
       })
       .to(track, {
         xPercent: -100,
@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
         let { isMobile, isTablet, isDesktop, reduceMotion } = context.conditions;
         // run animation functions
         setTrackHeights();
+        horizontalScroll();
       }
     );
   };
