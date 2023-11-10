@@ -1,3 +1,5 @@
+const { random } = require('gsap');
+
 document.addEventListener('DOMContentLoaded', function () {
   // Comment out for production
   console.log('Local Script Loaded');
@@ -29,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function () {
           trigger: section,
           start: 'top top',
           end: '98% bottom',
-          scrub: 1,
+          scrub: 0.5,
         },
       })
       .set(stickyEl, {
@@ -38,6 +40,63 @@ document.addEventListener('DOMContentLoaded', function () {
       .to(track, {
         xPercent: -100,
         ease: 'none',
+      });
+  };
+
+  const graphScroll = function () {
+    const section = document.querySelector('[graph-section]');
+    const component = document.querySelector('[graph-component]');
+    const h2 = document.querySelector('[graph-h2]');
+    const bars = document.querySelectorAll('.graph_bar-wrap');
+    const barsInner = document.querySelectorAll('.graph_bar');
+    if (!section || bars.length === 0 || !component) return;
+
+    const compHeight = component.offsetHeight;
+    //main timeline
+    let tl1 = gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 50%',
+          end: 'top 0%',
+          scrub: 0.5,
+        },
+      })
+      .from(bars, {
+        height: '0rem',
+        ease: 'power1.out',
+        duration: 1,
+        stagger: { each: 0.05, from: 'random' },
+      });
+    let tl2 = gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: 'top -2%',
+          end: 'bottom bottom',
+          scrub: 0.5,
+        },
+      })
+      .to(bars, {
+        height: compHeight,
+        duration: 1,
+        ease: 'power1.out',
+        stagger: { each: 0.05, from: 'random' },
+      });
+    let tl3 = gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: 'bottom 101%',
+          end: 'bottom top',
+          scrub: 0.5,
+        },
+      })
+      .to(barsInner, {
+        height: '35%',
+        duration: 1,
+        ease: 'power1.out',
+        stagger: { each: 0.05, from: 'random' },
       });
   };
 
@@ -58,6 +117,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // run animation functions
         setTrackHeights();
         horizontalScroll();
+        graphScroll();
       }
     );
   };
