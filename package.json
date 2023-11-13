@@ -21,5 +21,8 @@
     "gsap": "^3.12.2",
     "prettier": "2.8.1",
     "serve": "^14.1.2"
+  },
+  "dependencies": {
+    "split-type": "^0.3.4"
   }
 }

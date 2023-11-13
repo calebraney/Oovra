@@ -1,3 +1,4 @@
+import SplitType from 'split-type';
 const { random } = require('gsap');
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -9,9 +10,44 @@ document.addEventListener('DOMContentLoaded', function () {
   const horizontalSection = '[horizontal-el="section"]';
   const horizontalTrack = '[horizontal-el="track"]';
   const horizontalStickyEl = '[horizontal-el="sticky"]';
+  const refreshScrollTriggerItems = gsap.utils.toArray('[refresh-scroll]');
+
+  //////////////////////////////
+  //Reusable tweens
+
+  const horizHeading = function (props) {
+    const tween = {
+      x: props?.x ?? '24px',
+      rotateZ: props?.rotateZ ?? -1.5,
+      delay: props?.delay ?? 0,
+      opacity: props?.opacity ?? 0,
+      stagger: { each: 0.2, from: 'start' },
+    };
+    return tween;
+  };
+
+  const horizStaggerElements = function (props) {
+    const tween = {
+      x: props?.x ?? '24px',
+      rotateZ: props?.rotateZ ?? 0,
+      delay: props?.delay ?? 0,
+      opacity: props?.opacity ?? 0,
+      stagger: { each: props?.stagger ?? 0.2, from: 'start' },
+    };
+    return tween;
+  };
+
+  //////////////////////////////
+  //Utility Functions
+  const splitText = function (text) {
+    typeSplit = new SplitType(text, {
+      types: 'lines, words',
+    });
+    return typeSplit;
+  };
 
   const setTrackHeights = function () {
-    const sectionHeights = document.querySelectorAll(horizontalSection);
+    const sectionHeights = gsap.utils.toArray(horizontalSection);
     sectionHeights.forEach(function (section) {
       let track = section.querySelector(horizontalTrack);
       let trackWidth = track.offsetWidth;
@@ -19,8 +55,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   };
 
+  //////////////////////////////
+  //GSAP Animations
+  const section = document.querySelector(horizontalSection);
   const horizontalScroll = function () {
-    const section = document.querySelector(horizontalSection);
     const track = document.querySelector(horizontalTrack);
     const stickyEl = document.querySelector(horizontalStickyEl);
     if (!section || !track || !stickyEl) return;
@@ -33,6 +71,10 @@ document.addEventListener('DOMContentLoaded', function () {
           end: '98% bottom',
           scrub: 0.5,
         },
+        defaults: {
+          duration: 1,
+          ease: 'power1.out',
+        },
       })
       .set(stickyEl, {
         overflow: 'hidden',
@@ -41,48 +83,139 @@ document.addEventListener('DOMContentLoaded', function () {
         xPercent: -100,
         ease: 'none',
       });
+
+    // hero panel
+    gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: '[h-hero-panel]',
+          containerAnimation: tlMain,
+          start: 'left left',
+          end: 'right left',
+          scrub: true,
+        },
+      })
+      .to('[h-hero-image]', { x: '25%' }, 0);
+
+    // name panel
+    splitText(document.querySelector('[h-name-title]'));
+    gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: '[h-name-panel]',
+          containerAnimation: tlMain,
+          start: 'left right',
+          end: '+=75%',
+          scrub: true,
+        },
+      })
+      .from('[h-name-large]', { x: '200px,', delay: 2, duration: 3, opacity: 0 })
+      .from('[h-name-name], [h-name-pronounce] ', horizStaggerElements(), '<.5')
+      .from('[h-name-title] .line', horizHeading({ delay: 0.5 }), '<.5');
+
+    // color panel
+    // console.log(document.querySelector('[h-color-image'));
+    gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: '[h-color-panel]',
+          containerAnimation: tlMain,
+          start: 'left left',
+          end: 'right left',
+          scrub: true,
+        },
+      })
+      .to('[h-color-image]', { xPercent: 0 }, 0);
+
+    // feature panel
+    splitText(document.querySelector('[h-feature-1-title]'));
+    splitText(document.querySelector('[h-feature-2-title]'));
+    gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: '[h-feature-panel]',
+          containerAnimation: tlMain,
+          start: 'left left',
+          end: 'right left',
+          scrub: true,
+        },
+      })
+      //Feature 1
+      .from('[h-feature-1-number] ', { x: '-2rem,', opacity: 0 }, '<.5')
+      .from(
+        '[h-feature-1-title] .line',
+        { x: '24px,', delay: 0.5, opacity: 0, stagger: { each: 0.2, from: 'start' } },
+        '<.5'
+      )
+      .from('[h-feature-1-image]', { x: '24px,', delay: 2, opacity: 0 }, '<.5')
+      //Ampersand
+      .from('[h-feature-and]', { scale: 0.05, delay: 4, opacity: 0 }, '<.5')
+      //Feature 2
+      .from('[h-feature-2-number] ', { x: '-2rem,', opacity: 0, delay: 4 }, '<.5')
+      .from(
+        '[h-feature-2-title] .line',
+        { x: '24px,', delay: 0.5, opacity: 0, stagger: { each: 0.2, from: 'start' } },
+        '<.5'
+      )
+      .from('[h-feature-2-image]', { x: '24px,', delay: 2, opacity: 0 }, '<.5');
   };
 
-  const graphScroll = function () {
+  const graphScroll = function (isMobile) {
     const section = document.querySelector('[graph-section]');
     const component = document.querySelector('[graph-component]');
     const h2 = document.querySelector('[graph-h2]');
-    const bars = document.querySelectorAll('.graph_bar-wrap');
-    const barsInner = document.querySelectorAll('.graph_bar');
+    const bars = gsap.utils.toArray('.graph_bar-wrap');
+    const barsInner = gsap.utils.toArray('.graph_bar');
     if (!section || bars.length === 0 || !component) return;
 
-    const compHeight = component.offsetHeight;
-    //main timeline
-    let tl1 = gsap
-      .timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: 'top 50%',
-          end: 'top 0%',
-          scrub: 0.5,
+    const componentHeight = component.offsetHeight;
+    //animate bars from 0 to set height in Webflow
+    let tl1 = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: 'top 50%',
+        end: 'top 0%',
+        scrub: 0.5,
+      },
+    });
+    //animate bars from height in webflow to fill screen
+    let tl2 = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: 'top -2%',
+        end: 'bottom bottom',
+        scrub: 0.5,
+      },
+    });
+    bars.forEach((item, index) => {
+      const startHeight = item.offsetHeight;
+      //animation 1
+      tl1.fromTo(
+        item,
+        {
+          height: '0rem',
         },
-      })
-      .from(bars, {
-        height: '0rem',
-        ease: 'power1.out',
-        duration: 1,
-        stagger: { each: 0.05, from: 'random' },
-      });
-    let tl2 = gsap
-      .timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: 'top -2%',
-          end: 'bottom bottom',
-          scrub: 0.5,
+        {
+          height: startHeight,
+          ease: 'power1.out',
+          duration: 1 + gsap.utils.random(0, 0.5, 0.1),
+          delay: gsap.utils.random(0, 0.5, 0.1),
         },
-      })
-      .to(bars, {
-        height: compHeight,
-        duration: 1,
-        ease: 'power1.out',
-        stagger: { each: 0.05, from: 'random' },
-      });
+        0
+      );
+      // aniation 2
+      tl2.to(
+        item,
+        {
+          height: componentHeight,
+          duration: 1 + gsap.utils.random(0, 0.5, 0.1),
+          delay: gsap.utils.random(0, 0.5, 0.1),
+          ease: 'power1.out',
+        },
+        0
+      );
+    });
+
     let tl3 = gsap
       .timeline({
         scrollTrigger: {
@@ -115,8 +248,10 @@ document.addEventListener('DOMContentLoaded', function () {
       (context) => {
         let { isMobile, isTablet, isDesktop, reduceMotion } = context.conditions;
         // run animation functions
-        setTrackHeights();
-        horizontalScroll();
+        if (isDesktop || isTablet) {
+          setTrackHeights();
+          horizontalScroll();
+        }
         graphScroll();
       }
     );
@@ -124,6 +259,12 @@ document.addEventListener('DOMContentLoaded', function () {
   gsapInit();
   window.addEventListener('resize', function () {
     setTrackHeights();
+    ScrollTrigger.refresh();
+  });
+  refreshScrollTriggerItems.forEach(function (item) {
+    item.addEventListener('click', function () {
+      ScrollTrigger.refresh();
+    });
   });
 });
 
