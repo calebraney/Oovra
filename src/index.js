@@ -15,10 +15,22 @@ document.addEventListener('DOMContentLoaded', function () {
   //////////////////////////////
   //Reusable tweens
 
+  const horizElement = function (props) {
+    const tween = {
+      x: props?.x ?? '24px',
+      rotateZ: props?.rotateZ ?? -1.5,
+      duration: props?.duration ?? 1,
+      delay: props?.delay ?? 0,
+      opacity: props?.opacity ?? 0,
+    };
+    return tween;
+  };
+
   const horizHeading = function (props) {
     const tween = {
       x: props?.x ?? '24px',
       rotateZ: props?.rotateZ ?? -1.5,
+      duration: props?.duration ?? 1,
       delay: props?.delay ?? 0,
       opacity: props?.opacity ?? 0,
       stagger: { each: 0.2, from: 'start' },
@@ -30,6 +42,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const tween = {
       x: props?.x ?? '24px',
       rotateZ: props?.rotateZ ?? 0,
+      duration: props?.duration ?? 1,
       delay: props?.delay ?? 0,
       opacity: props?.opacity ?? 0,
       stagger: { each: props?.stagger ?? 0.2, from: 'start' },
@@ -57,8 +70,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
   //////////////////////////////
   //GSAP Animations
-  const section = document.querySelector(horizontalSection);
   const horizontalScroll = function () {
+    const section = document.querySelector(horizontalSection);
     const track = document.querySelector(horizontalTrack);
     const stickyEl = document.querySelector(horizontalStickyEl);
     if (!section || !track || !stickyEl) return;
@@ -111,21 +124,21 @@ document.addEventListener('DOMContentLoaded', function () {
       })
       .from('[h-name-large]', { x: '200px,', delay: 2, duration: 3, opacity: 0 })
       .from('[h-name-name], [h-name-pronounce] ', horizStaggerElements(), '<.5')
-      .from('[h-name-title] .line', horizHeading({ delay: 0.5 }), '<.5');
+      .from('[h-name-title] .line', horizHeading(), '<.5');
 
     // color panel
     // console.log(document.querySelector('[h-color-image'));
-    gsap
-      .timeline({
-        scrollTrigger: {
-          trigger: '[h-color-panel]',
-          containerAnimation: tlMain,
-          start: 'left left',
-          end: 'right left',
-          scrub: true,
-        },
-      })
-      .to('[h-color-image]', { xPercent: 0 }, 0);
+    // gsap
+    //   .timeline({
+    //     scrollTrigger: {
+    //       trigger: '[h-color-panel]',
+    //       containerAnimation: tlMain,
+    //       start: 'left left',
+    //       end: 'right left',
+    //       scrub: true,
+    //     },
+    //   })
+    //   .to('[h-color-image]', { xPercent: 0 }, 0);
 
     // feature panel
     splitText(document.querySelector('[h-feature-1-title]'));
@@ -135,29 +148,21 @@ document.addEventListener('DOMContentLoaded', function () {
         scrollTrigger: {
           trigger: '[h-feature-panel]',
           containerAnimation: tlMain,
-          start: 'left left',
-          end: 'right left',
+          start: 'left right',
+          end: '+=150%',
           scrub: true,
         },
       })
       //Feature 1
-      .from('[h-feature-1-number] ', { x: '-2rem,', opacity: 0 }, '<.5')
-      .from(
-        '[h-feature-1-title] .line',
-        { x: '24px,', delay: 0.5, opacity: 0, stagger: { each: 0.2, from: 'start' } },
-        '<.5'
-      )
-      .from('[h-feature-1-image]', { x: '24px,', delay: 2, opacity: 0 }, '<.5')
+      .from('[h-feature-1-number] ', horizElement({ delay: 1 }))
+      .from('[h-feature-1-title] .line', horizHeading())
+      .from('[h-feature-1-image]', horizElement({ delay: 0.75 }))
       //Ampersand
-      .from('[h-feature-and]', { scale: 0.05, delay: 4, opacity: 0 }, '<.5')
+      .from('[h-feature-and]', { scale: 0.05, delay: 0.5, opacity: 0 }, '<.5')
       //Feature 2
-      .from('[h-feature-2-number] ', { x: '-2rem,', opacity: 0, delay: 4 }, '<.5')
-      .from(
-        '[h-feature-2-title] .line',
-        { x: '24px,', delay: 0.5, opacity: 0, stagger: { each: 0.2, from: 'start' } },
-        '<.5'
-      )
-      .from('[h-feature-2-image]', { x: '24px,', delay: 2, opacity: 0 }, '<.5');
+      .from('[h-feature-2-number]', horizElement(), '<.5')
+      .from('[h-feature-2-title] .line', horizHeading())
+      .from('[h-feature-2-image]', horizElement({ delay: 0.75 }));
   };
 
   const graphScroll = function (isMobile) {
