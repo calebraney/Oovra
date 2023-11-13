@@ -192,16 +192,17 @@ document.addEventListener('DOMContentLoaded', function () {
         scrub: 0.5,
       },
     });
+    const sizes = ['22vh', '40vh', '30vh', '15vh', '24vh', '60vh', '50vh', '70vh'];
     bars.forEach((item, index) => {
-      const startHeight = item.offsetHeight;
+      // const startHeight = item.offsetHeight;
       //animation 1
       tl1.fromTo(
         item,
         {
-          height: '0rem',
+          height: '0vh',
         },
         {
-          height: startHeight,
+          height: sizes[index],
           ease: 'power1.out',
           duration: 1 + gsap.utils.random(0, 0.5, 0.1),
           delay: gsap.utils.random(0, 0.5, 0.1),
@@ -209,8 +210,9 @@ document.addEventListener('DOMContentLoaded', function () {
         0
       );
       // aniation 2
-      tl2.to(
+      tl2.fromTo(
         item,
+        { height: sizes[index] },
         {
           height: componentHeight,
           duration: 1 + gsap.utils.random(0, 0.5, 0.1),
@@ -272,79 +274,3 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 });
-
-// let tlMain = gsap
-//   .timeline({
-//     scrollTrigger: {
-//       trigger: ".section-height",
-//       start: "top top",
-//       end: "98% bottom",
-//       scrub: 1
-//     }
-//   })
-//   .to(".track", {
-//     xPercent: -100,
-//     ease: "none"
-//   });
-
-// // hero photo
-// gsap
-//   .timeline({
-//     scrollTrigger: {
-//       trigger: ".hero-panel",
-//       containerAnimation: tlMain,
-//       start: "left left",
-//       end: "right left",
-//       scrub: true
-//     }
-//   })
-//   .from(".hero-panel_img", { scale: 1.6 }, 0);
-
-// // note
-// gsap
-//   .timeline({
-//     scrollTrigger: {
-//       trigger: ".note-panel",
-//       containerAnimation: tlMain,
-//       start: "left right",
-//       end: "left left",
-//       scrub: true
-//     }
-//   })
-//   .from(".note-panel_img", { rotate: 45, scale: 0.3 });
-
-// // thanks
-// gsap
-//   .timeline({
-//     scrollTrigger: {
-//       trigger: ".thanks-panel_wrap",
-//       containerAnimation: tlMain,
-//       start: "left left",
-//       end: "right right",
-//       scrub: true
-//     }
-//   })
-//   .to(".thanks-panel", { xPercent: 100, ease: "none" })
-//   .to(".thanks-panel_photo", { scale: 1 }, 0)
-//   .fromTo(
-//     ".thanks-panel_contain.is-2",
-//     {
-//       clipPath: "polygon(100% 0%, 100% 0%, 100% 100%, 100% 100%)"
-//     },
-//     { clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)", ease: "none" },
-//     0
-//   );
-
-// // stagger photos
-// gsap
-//   .timeline({
-//     scrollTrigger: {
-//       trigger: ".stagger-panel",
-//       containerAnimation: tlMain,
-//       start: "left right",
-//       end: "right left",
-//       scrub: true
-//     }
-//   })
-//   .from(".stagger-panel_img", { x: "100vw", stagger: { each: 0.05 } })
-//   .to(".stagger-panel_img", { scale: 0.5, stagger: { each: 0.05 } });
