@@ -114,17 +114,19 @@ document.addEventListener('DOMContentLoaded', function () {
       duration: props?.duration ?? 1,
       delay: props?.delay ?? 0,
       opacity: props?.opacity ?? 0,
+      ease: props?.opacity ?? 'power1.out',
     };
     return tween;
   };
 
-  const horizHeading = function (props) {
+  const headingFade = function (props) {
     const tween = {
       x: props?.x ?? '24px',
       rotateZ: props?.rotateZ ?? -1.5,
       duration: props?.duration ?? 1,
       delay: props?.delay ?? 0,
       opacity: props?.opacity ?? 0,
+      ease: props?.opacity ?? 'power1.out',
       stagger: { each: 0.2, from: 'start' },
     };
     return tween;
@@ -137,6 +139,20 @@ document.addEventListener('DOMContentLoaded', function () {
       duration: props?.duration ?? 1,
       delay: props?.delay ?? 0,
       opacity: props?.opacity ?? 0,
+      ease: props?.opacity ?? 'power1.out',
+      stagger: { each: props?.stagger ?? 0.2, from: 'start' },
+    };
+    return tween;
+  };
+
+  const vertStaggerElements = function (props) {
+    const tween = {
+      y: props?.y ?? '32px',
+      rotateZ: props?.rotateZ ?? -1.5,
+      duration: props?.duration ?? 1,
+      delay: props?.delay ?? 0,
+      opacity: props?.opacity ?? 0,
+      ease: props?.opacity ?? 'power1.out',
       stagger: { each: props?.stagger ?? 0.2, from: 'start' },
     };
     return tween;
@@ -216,21 +232,21 @@ document.addEventListener('DOMContentLoaded', function () {
       })
       .from('[h-name-large]', { x: '200px,', delay: 2, duration: 3, opacity: 0 })
       .from('[h-name-name], [h-name-pronounce] ', horizStaggerElements(), '<.5')
-      .from('[h-name-title] .line', horizHeading(), '<.5');
+      .from('[h-name-title] .line', headingFade(), '<.5');
 
     // color panel
     // console.log(document.querySelector('[h-color-image'));
-    // gsap
-    //   .timeline({
-    //     scrollTrigger: {
-    //       trigger: '[h-color-panel]',
-    //       containerAnimation: tlMain,
-    //       start: 'left left',
-    //       end: 'right left',
-    //       scrub: true,
-    //     },
-    //   })
-    //   .to('[h-color-image]', { xPercent: 0 }, 0);
+    gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: '[h-color-panel]',
+          containerAnimation: tlMain,
+          start: 'left right',
+          end: 'right left',
+          scrub: true,
+        },
+      })
+      .to('[h-color-image]', { xPercent: -25 }, 0);
 
     // feature panel
     splitText(document.querySelector('[h-feature-1-title]'));
@@ -247,13 +263,13 @@ document.addEventListener('DOMContentLoaded', function () {
       })
       //Feature 1
       .from('[h-feature-1-number] ', horizElement({ delay: 1 }))
-      .from('[h-feature-1-title] .line', horizHeading())
+      .from('[h-feature-1-title] .line', headingFade())
       .from('[h-feature-1-image]', horizElement({ delay: 0.75 }))
       //Ampersand
       .from('[h-feature-and]', { scale: 0.05, delay: 0.5, opacity: 0 }, '<.5')
       //Feature 2
       .from('[h-feature-2-number]', horizElement(), '<.5')
-      .from('[h-feature-2-title] .line', horizHeading())
+      .from('[h-feature-2-title] .line', headingFade())
       .from('[h-feature-2-image]', horizElement({ delay: 0.75 }));
   };
 
@@ -267,27 +283,38 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const componentHeight = component.offsetHeight;
     //animate bars from 0 to set height in Webflow
-    let tl1 = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: 'top 50%',
-        end: 'top 0%',
-        scrub: 0.5,
-      },
-    });
+    splitText(document.querySelector('[feature-3-title]'));
+    let tl1 = gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 50%',
+          end: 'top 5%',
+          scrub: true,
+        },
+      })
+      .from('[feature-3-number] ', horizElement())
+      .from('[feature-3-title] .line', headingFade(), '<.5');
     //animate bars from height in webflow to fill screen
     let tl2 = gsap.timeline({
       scrollTrigger: {
         trigger: section,
-        start: 'top -2%',
-        end: 'bottom bottom',
-        scrub: 0.5,
+        start: 'top 0%',
+        end: 'bottom 95%',
+        scrub: true,
       },
     });
     const sizes = ['22vh', '40vh', '30vh', '15vh', '24vh', '60vh', '50vh', '70vh'];
     bars.forEach((item, index) => {
       // const startHeight = item.offsetHeight;
       //animation 1
+      tl1.set(
+        item,
+        {
+          height: '0vh',
+        },
+        0
+      );
       tl1.fromTo(
         item,
         {
@@ -296,32 +323,32 @@ document.addEventListener('DOMContentLoaded', function () {
         {
           height: sizes[index],
           ease: 'power1.out',
-          duration: 1 + gsap.utils.random(0, 0.5, 0.1),
+          duration: 1.5 + gsap.utils.random(0, 0.5, 0.1),
           delay: gsap.utils.random(0, 0.5, 0.1),
         },
-        0
+        1.5
       );
-      // aniation 2
-      tl2.fromTo(
-        item,
-        { height: sizes[index] },
-        {
-          height: componentHeight,
-          duration: 1 + gsap.utils.random(0, 0.5, 0.1),
-          delay: gsap.utils.random(0, 0.5, 0.1),
-          ease: 'power1.out',
-        },
-        0
-      );
+      // // aniation 2
+      // tl2.to(
+      //   item,
+      //   { height: sizes[index] },
+      //   {
+      //     height: componentHeight,
+      //     duration: 1 + gsap.utils.random(0, 0.5, 0.1),
+      //     delay: gsap.utils.random(0, 0.5, 0.1),
+      //     ease: 'power1.out',
+      //   },
+      //   0
+      // );
     });
 
     let tl3 = gsap
       .timeline({
         scrollTrigger: {
           trigger: section,
-          start: 'bottom 101%',
-          end: 'bottom top',
-          scrub: 0.5,
+          start: 'bottom 100%',
+          end: 'bottom 0%',
+          scrub: true,
         },
       })
       .to(barsInner, {
@@ -330,6 +357,56 @@ document.addEventListener('DOMContentLoaded', function () {
         ease: 'power1.out',
         stagger: { each: 0.05, from: 'random' },
       });
+  };
+
+  const artTypeScroll = function () {
+    const trigger = document.querySelector('[art-type-trigger]');
+    const title = document.querySelector('[art-type-title]');
+    const line = document.querySelector('[art-type-line]');
+    const spans = gsap.utils.toArray('.art-types_h3-span-wrap');
+
+    if (!trigger || !line || !title || spans.length === 0) return;
+    //animate spans from 0 to set height in Webflow
+    splitText(title);
+    let tl = gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: trigger,
+          start: 'top bottom',
+          end: 'bottom 95%',
+          scrub: 0.5,
+        },
+      })
+      .from(title, headingFade(), '<.5')
+      .from(line, { width: 0, duration: 1, ease: 'power1.out' })
+      .from(
+        spans,
+        {
+          y: '32px',
+          duration: 1,
+          opacity: 0,
+          ease: 'power1.out',
+          stagger: { each: 0.2, from: 'start' },
+        },
+        '<.5'
+      );
+  };
+  const fadeHeadingsIn = function () {
+    const headings = document.querySelector('[heading-fade]');
+    headings.forEach((item, index) => {
+      if (!item) return;
+      splitText(item);
+      let tl = gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: trigger,
+            start: 'top bottom',
+            end: 'bottom 95%',
+            scrub: 0.5,
+          },
+        })
+        .from(title, headingFade(), '<.5');
+    });
   };
 
   //////////////////////////////
@@ -352,13 +429,14 @@ document.addEventListener('DOMContentLoaded', function () {
           horizontalScroll();
         }
         graphScroll();
+        artTypeScroll();
+        fadeHeadingsIn();
       }
     );
   };
   gsapInit();
   window.addEventListener('resize', function () {
-    setTrackHeights();
-    ScrollTrigger.refresh();
+    gsapInit();
   });
   refreshScrollTriggerItems.forEach(function (item) {
     item.addEventListener('click', function () {
