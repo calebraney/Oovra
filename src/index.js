@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
   //////////////////////////////
   //LENIS Smoothscroll
   gsap.registerPlugin(ScrollTrigger);
+  gsap.registerPlugin(Flip);
 
   const lenis = new Lenis({
     duration: 1,
@@ -127,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function () {
       delay: props?.delay ?? 0,
       opacity: props?.opacity ?? 0,
       ease: props?.opacity ?? 'power1.out',
-      stagger: { each: 0.2, from: 'start' },
+      stagger: { each: 0.3, from: 'start' },
     };
     return tween;
   };
@@ -281,8 +282,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const barsInner = gsap.utils.toArray('.graph_bar');
     if (!section || bars.length === 0 || !component) return;
 
-    const componentHeight = component.offsetHeight;
-    //animate bars from 0 to set height in Webflow
+    //animate bars from 0 to set height in array
     splitText(document.querySelector('[feature-3-title]'));
     let tl1 = gsap
       .timeline({
@@ -328,18 +328,6 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         1.5
       );
-      // // aniation 2
-      // tl2.to(
-      //   item,
-      //   { height: sizes[index] },
-      //   {
-      //     height: componentHeight,
-      //     duration: 1 + gsap.utils.random(0, 0.5, 0.1),
-      //     delay: gsap.utils.random(0, 0.5, 0.1),
-      //     ease: 'power1.out',
-      //   },
-      //   0
-      // );
     });
 
     let tl3 = gsap
@@ -377,8 +365,8 @@ document.addEventListener('DOMContentLoaded', function () {
           scrub: 0.5,
         },
       })
-      .from(title, headingFade(), '<.5')
-      .from(line, { width: 0, duration: 1, ease: 'power1.out' })
+      .from(title, headingFade())
+      .from(line, { width: 0, duration: 1, ease: 'power1.out' }, '<.5')
       .from(
         spans,
         {
@@ -391,22 +379,85 @@ document.addEventListener('DOMContentLoaded', function () {
         '<.5'
       );
   };
+
+  const artistLedScroll = function () {
+    const section = document.querySelector('[artist-led-section]');
+    const marquee = document.querySelector('[artist-led-marquee]');
+    const stickers = gsap.utils.toArray('[artist-led-sticker]');
+
+    if (!section || !marquee || stickers.length === 0) return;
+
+    let textTL = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: 'center top',
+        end: 'bottom 95%',
+        scrub: 0.5,
+      },
+    });
+    //marquee animations
+    textTL.to(marquee, { yPercent: -100, ease: 'power2.inOut', duration: 1 });
+    textTL.to(marquee, { yPercent: -200, ease: 'power2.inOut', duration: 1 });
+
+    ///////////
+    // Stickers TL
+
+    // create the final state
+    stickers.forEach((item) => item.classList.add('is-final'));
+    // save that final state
+    const state = Flip.getState([stickers], {
+      props: 'opacity,borderRadius',
+    });
+    // revert to original state
+    stickers.forEach((item) => item.classList.remove('is-final'));
+
+    // animate with Flip
+    const tl = Flip.to(state, {
+      ease: 'none',
+      absolute: true,
+      scale: true,
+      scrollTrigger: {
+        trigger: section,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 0.5,
+        ease: 'power3.in',
+      },
+    });
+  };
+
   const fadeHeadingsIn = function () {
-    const headings = document.querySelector('[heading-fade]');
+    const headings = document.querySelectorAll('[heading-fade]');
     headings.forEach((item, index) => {
       if (!item) return;
-      splitText(item);
+      text = splitText(item);
       let tl = gsap
         .timeline({
           scrollTrigger: {
-            trigger: trigger,
+            trigger: item,
             start: 'top bottom',
             end: 'bottom 95%',
             scrub: 0.5,
           },
         })
-        .from(title, headingFade(), '<.5');
+        .from(text.lines, headingFade(), '<.5');
     });
+  };
+
+  const moveSpacer = function () {
+    const section = document.querySelector('.spacer_wrap');
+    const item = document.querySelector('.spacer_image');
+    if (!item || !section) return;
+    let tl = gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 0.5,
+        },
+      })
+      .from(item, { yPercent: -25 });
   };
 
   //////////////////////////////
@@ -428,9 +479,15 @@ document.addEventListener('DOMContentLoaded', function () {
           setTrackHeights();
           horizontalScroll();
         }
-        graphScroll();
+
         artTypeScroll();
-        fadeHeadingsIn();
+
+        artistLedScroll();
+        if (!reduceMotion) {
+          fadeHeadingsIn();
+          graphScroll();
+          moveSpacer();
+        }
       }
     );
   };
