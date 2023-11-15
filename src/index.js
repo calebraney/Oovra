@@ -406,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function () {
     stickers.forEach((item) => item.classList.add('is-final'));
     // save that final state
     const state = Flip.getState([stickers], {
-      props: 'scale,rotate',
+      // props: 'borderRadius',
     });
     // revert to original state
     stickers.forEach((item) => item.classList.remove('is-final'));
@@ -416,6 +416,7 @@ document.addEventListener('DOMContentLoaded', function () {
       ease: 'none',
       absolute: true,
       scale: true,
+      spin: false,
       scrollTrigger: {
         trigger: section,
         start: 'top top',
@@ -460,6 +461,27 @@ document.addEventListener('DOMContentLoaded', function () {
       .from(item, { yPercent: -25 });
   };
 
+  const footerScroll = function () {
+    const component = document.querySelector('[footer-component]');
+    const bars = gsap.utils.toArray('[footer-bar]');
+    if (!component || bars.length === 0) return;
+    let tl = gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: component,
+          start: 'top 100%',
+          end: 'bottom bottom',
+          scrub: true,
+        },
+      })
+      .from(bars, {
+        width: '0%',
+        duration: 1,
+        ease: 'power1.out',
+        stagger: { each: 0.2, from: 'start' },
+      });
+  };
+
   //////////////////////////////
   //Control Functions on page load
   const gsapInit = function () {
@@ -487,6 +509,7 @@ document.addEventListener('DOMContentLoaded', function () {
           fadeHeadingsIn();
           graphScroll();
           moveSpacer();
+          footerScroll();
         }
       }
     );
