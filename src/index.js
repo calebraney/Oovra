@@ -258,7 +258,7 @@ document.addEventListener('DOMContentLoaded', function () {
           trigger: '[h-feature-panel]',
           containerAnimation: tlMain,
           start: 'left right',
-          end: '+=150%',
+          end: '+=140%',
           scrub: true,
         },
       })
@@ -271,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function () {
       //Feature 2
       .from('[h-feature-2-number]', horizElement(), '<.5')
       .from('[h-feature-2-title] .line', headingFade())
-      .from('[h-feature-2-image]', horizElement({ delay: 0.75 }));
+      .from('[h-feature-2-image]', horizElement({ delay: 0.5 }));
   };
 
   const graphScroll = function (isMobile) {
@@ -406,7 +406,7 @@ document.addEventListener('DOMContentLoaded', function () {
     stickers.forEach((item) => item.classList.add('is-final'));
     // save that final state
     const state = Flip.getState([stickers], {
-      props: 'opacity,borderRadius',
+      props: 'scale,rotate',
     });
     // revert to original state
     stickers.forEach((item) => item.classList.remove('is-final'));
