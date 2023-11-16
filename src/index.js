@@ -339,11 +339,9 @@ document.addEventListener('DOMContentLoaded', function () {
       .fromTo(
         nav,
         {
-          // yPercent: -110,
           opacity: 0,
         },
         {
-          // yPercent: 0,
           duration: 0.6,
           opacity: 1,
           ease: 'power1.out',
@@ -432,7 +430,7 @@ document.addEventListener('DOMContentLoaded', function () {
           trigger: '[h-feature-panel]',
           containerAnimation: tlMain,
           start: 'left right',
-          end: '+=140%',
+          end: 'right right',
           scrub: true,
         },
       })
@@ -440,12 +438,20 @@ document.addEventListener('DOMContentLoaded', function () {
       .from('[h-feature-1-number] ', horizElement({ delay: 1 }))
       .from('[h-feature-1-title] .line', headingFade())
       .from('[h-feature-1-image]', horizElement({ delay: 0.75 }))
+
       //Ampersand
       .from('[h-feature-and]', { scale: 0.05, delay: 0.5, opacity: 0 }, '<.5')
       //Feature 2
       .from('[h-feature-2-number]', horizElement(), '<.5')
       .from('[h-feature-2-title] .line', headingFade())
-      .from('[h-feature-2-image]', horizElement({ delay: 0.5 }));
+      .from('[h-feature-2-image]', horizElement({ delay: 0.5 }))
+      .fromTo(
+        '[h-feature-2-image-front]',
+        { xPercent: 0, rotateZ: 0, yPercent: 0 },
+        { xPercent: -8, rotateZ: 5, yPercent: -8, duration: 2 },
+        '<'
+      )
+      .fromTo('[h-feature-1-image-front]', { xPercent: -5 }, { xPercent: 5, duration: 7 }, 4);
   };
 
   const graphScroll = function (isMobile) {
@@ -690,7 +696,7 @@ document.addEventListener('DOMContentLoaded', function () {
   };
   gsapInit();
   window.addEventListener('resize', function () {
-    gsapInit();
+    // gsapInit();
     ScrollTrigger.refresh();
   });
   refreshScrollTriggerItems.forEach(function (item) {
