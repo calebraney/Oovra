@@ -680,14 +680,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     stickers.forEach((item) => item.classList.add('is-final'));
     // save that final state
-    const state = Flip.getState([stickers, stickerImages], {
-      props: 'rotateX.rotateY,rotateZ',
-      nested: true,
+    const state = Flip.getState([stickers], {
+      // props: 'rotateX.rotateY,rotateZ',
+      nested: false,
     });
     // revert to original state
     stickers.forEach((item) => item.classList.remove('is-final'));
     // animate with Flip
-    const tl = Flip.to(state, {
+    let stickerTL = Flip.to(state, {
       ease: 'none',
       absolute: true,
       spin: false,
@@ -699,8 +699,18 @@ document.addEventListener('DOMContentLoaded', function () {
         ease: 'power3.in',
       },
     });
-    stickerImages.forEach((item) => {
-      tl.to(item, { rotateZ: gsap.utils.random(-20, 20), ease: 'power1.inOut', duration: 1 }, 0);
+    let rotateTL = gsap.timeline({
+      scrollTrigger: {
+        trigger: section,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 0.5,
+        ease: 'power3.in',
+      },
+    });
+    // const rotations = [-42];
+    stickerImages.forEach((item, index) => {
+      rotateTL.from(item, { rotateZ: 0, ease: 'power1.inOut', duration: 1 }, 0);
     });
   };
 
