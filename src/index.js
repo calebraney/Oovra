@@ -4,7 +4,7 @@ const { random } = require('gsap');
 
 document.addEventListener('DOMContentLoaded', function () {
   // Comment out for production
-  // console.log('Local Script Loaded');
+  console.log('Local Script Loaded');
 
   //////////////////////////////
   //LENIS Smoothscroll
@@ -671,7 +671,9 @@ document.addEventListener('DOMContentLoaded', function () {
     ///////////
     // Stickers TL
     // create the final state
-    Flip.killFlipsOf(stickers);
+
+    // Flip.killFlipsOf(stickers);
+
     stickers.forEach((item) => item.classList.add('is-final'));
     // save that final state
     const state = Flip.getState([stickers], {
@@ -784,10 +786,13 @@ document.addEventListener('DOMContentLoaded', function () {
     );
   };
   gsapInit();
+  let windowWidth = window.innerWidth();
   window.addEventListener('resize', function () {
-    // gsapInit();
-    ScrollTrigger.update();
-    artistLedScroll();
+    if (windowWidth !== $(window).innerWidth()) {
+      // gsapInit();
+      ScrollTrigger.update();
+      artistLedScroll();
+    }
   });
   refreshScrollTriggerItems.forEach(function (item) {
     item.addEventListener('click', function () {
