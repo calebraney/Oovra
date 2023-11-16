@@ -656,13 +656,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const section = document.querySelector('[artist-led-section]');
     const marquee = document.querySelector('[artist-led-marquee]');
     const stickers = gsap.utils.toArray('[artist-led-sticker]');
+    const stickerImages = gsap.utils.toArray('.artist-led_sticker');
 
     if (!section || !marquee || stickers.length === 0) return;
 
     let textTL = gsap.timeline({
       scrollTrigger: {
         trigger: section,
-        start: 'center top',
+        start: 'center 40%',
         end: 'bottom 95%',
         scrub: 0.5,
       },
@@ -679,8 +680,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     stickers.forEach((item) => item.classList.add('is-final'));
     // save that final state
-    const state = Flip.getState([stickers], {
-      // props: 'borderRadius',
+    const state = Flip.getState([stickers, stickerImages], {
+      props: 'rotateX.rotateY,rotateZ',
+      nested: true,
     });
     // revert to original state
     stickers.forEach((item) => item.classList.remove('is-final'));
@@ -696,6 +698,9 @@ document.addEventListener('DOMContentLoaded', function () {
         scrub: 0.5,
         ease: 'power3.in',
       },
+    });
+    stickerImages.forEach((item) => {
+      tl.to(item, { rotateZ: gsap.utils.random(-20, 20), ease: 'power1.inOut', duration: 1 }, 0);
     });
   };
 
