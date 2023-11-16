@@ -4,7 +4,7 @@ const { random } = require('gsap');
 
 document.addEventListener('DOMContentLoaded', function () {
   // Comment out for production
-  console.log('Local Script Loaded');
+  // console.log('Local Script Loaded');
 
   //////////////////////////////
   //LENIS Smoothscroll
@@ -35,8 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (!target) return;
       item.addEventListener('click', (event) => {
         lenis.scrollTo(target, {
-          duration: 1.85,
-          easing: (t) => (t === 1 ? 1 : 1 - Math.pow(2, -10 * t)),
+          duration: 0,
         });
       });
     });
@@ -112,7 +111,11 @@ document.addEventListener('DOMContentLoaded', function () {
   ///////////////////////////////
   //Page Load Animation
   const pageLoad = function () {
-    // Code that runs on pageload
+    //fixes some animations not loading until scroll
+    const scrollPosition = scrollY;
+    lenis.scrollTo(scrollPosition + 1);
+
+    // page load animation
     let tl = gsap.timeline({});
     tl.to(loadLogo, {
       yPercent: -150,
@@ -786,13 +789,12 @@ document.addEventListener('DOMContentLoaded', function () {
     );
   };
   gsapInit();
-  let windowWidth = window.innerWidth();
+  let windowWidth = window.innerWidth;
   window.addEventListener('resize', function () {
-    if (windowWidth !== $(window).innerWidth()) {
-      // gsapInit();
-      ScrollTrigger.update();
-      artistLedScroll();
+    if (window.innerWidth !== windowWidth) {
+      location.reload();
     }
+    // gsapInit();
   });
   refreshScrollTriggerItems.forEach(function (item) {
     item.addEventListener('click', function () {
