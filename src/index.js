@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
   //////////////////////////////
   //Reusable tweens
 
-  const horizElement = function (props) {
+  const fadeElement = function (props) {
     const tween = {
       x: props?.x ?? '24px',
       rotateZ: props?.rotateZ ?? -1.5,
@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return tween;
   };
 
-  const headingFade = function (props) {
+  const fadeHeading = function (props) {
     const tween = {
       x: props?.x ?? '24px',
       rotateZ: props?.rotateZ ?? -1.5,
@@ -218,23 +218,10 @@ document.addEventListener('DOMContentLoaded', function () {
     return tween;
   };
 
-  const horizStaggerElements = function (props) {
+  const fadeStagger = function (props) {
     const tween = {
       x: props?.x ?? '24px',
       rotateZ: props?.rotateZ ?? 0,
-      duration: props?.duration ?? 1,
-      delay: props?.delay ?? 0,
-      opacity: props?.opacity ?? 0,
-      ease: props?.opacity ?? 'power1.out',
-      stagger: { each: props?.stagger ?? 0.2, from: 'start' },
-    };
-    return tween;
-  };
-
-  const vertStaggerElements = function (props) {
-    const tween = {
-      y: props?.y ?? '32px',
-      rotateZ: props?.rotateZ ?? -1.5,
       duration: props?.duration ?? 1,
       delay: props?.delay ?? 0,
       opacity: props?.opacity ?? 0,
@@ -288,7 +275,7 @@ document.addEventListener('DOMContentLoaded', function () {
       .timeline({
         delay: 1.2,
       })
-      .from(nameSplit.chars, headingFade({ duration: 0.6, stagger: 0.1 }))
+      .from(nameSplit.chars, fadeHeading({ duration: 0.6, stagger: 0.1 }))
       .fromTo(
         arrow,
         {
@@ -303,7 +290,7 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         '<.4'
       )
-      .from(titleSplit.lines, headingFade({ duration: 0.6 }), '<.2')
+      .from(titleSplit.lines, fadeHeading({ duration: 0.6 }), '<.2')
       .from(
         button,
         {
@@ -404,8 +391,8 @@ document.addEventListener('DOMContentLoaded', function () {
         },
       })
       .from('[h-name-large]', { x: '200px,', delay: 2, duration: 3, opacity: 0 })
-      .from('[h-name-name], [h-name-pronounce] ', horizStaggerElements(), '<.5')
-      .from('[h-name-title] .line', headingFade(), '<.5');
+      .from('[h-name-name], [h-name-pronounce] ', fadeStagger(), '<.5')
+      .from('[h-name-title] .line', fadeHeading(), '<.5');
 
     // color panel
     // console.log(document.querySelector('[h-color-image'));
@@ -435,16 +422,16 @@ document.addEventListener('DOMContentLoaded', function () {
         },
       })
       //Feature 1
-      .from('[h-feature-1-number] ', horizElement({ delay: 1 }))
-      .from('[h-feature-1-title] .line', headingFade())
-      .from('[h-feature-1-image]', horizElement({ delay: 0.75 }))
+      .from('[h-feature-1-number] ', fadeElement({ delay: 1 }))
+      .from('[h-feature-1-title] .line', fadeHeading())
+      .from('[h-feature-1-image]', fadeElement({ delay: 0.75 }))
 
       //Ampersand
       .from('[h-feature-and]', { scale: 0.05, delay: 0.5, opacity: 0 }, '<.5')
       //Feature 2
-      .from('[h-feature-2-number]', horizElement(), '<.5')
-      .from('[h-feature-2-title] .line', headingFade())
-      .from('[h-feature-2-image]', horizElement({ delay: 0.5 }))
+      .from('[h-feature-2-number]', fadeElement(), '<.5')
+      .from('[h-feature-2-title] .line', fadeHeading())
+      .from('[h-feature-2-image]', fadeElement({ delay: 0.5 }))
       .fromTo(
         '[h-feature-2-image-front]',
         { xPercent: 0, rotateZ: 0, yPercent: 0 },
@@ -452,6 +439,108 @@ document.addEventListener('DOMContentLoaded', function () {
         '<'
       )
       .fromTo('[h-feature-1-image-front]', { xPercent: -5 }, { xPercent: 5, duration: 7 }, 4);
+  };
+
+  const horizontalScrollMobile = function () {
+    const headings = gsap.utils.toArray(
+      '[h-name-title], [h-feature-1-title], [h-feature-2-title] '
+    );
+    const accentText = gsap.utils.toArray(
+      '[h-name-name], [h-name-pronounce], [h-name-large], [h-feature-1-number], [h-feature-2-number], [h-feature-and] '
+    );
+    const images = gsap.utils.toArray('[h-feature-1-image], [h-feature-2-image] ');
+    //headings animation
+    headings.forEach((item) => {
+      if (!item) return;
+      const text = splitText(item);
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: item,
+            start: 'top 90%',
+            end: 'top 60%',
+            scrub: true,
+          },
+        })
+        .from(text.lines, fadeHeading());
+    });
+    //accent text animation
+    accentText.forEach((item) => {
+      if (!item) return;
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: item,
+            start: 'top 90%',
+            end: 'top 70%',
+            scrub: true,
+          },
+        })
+        .from(item, fadeElement());
+    });
+    //accent text animation
+    images.forEach((item) => {
+      if (!item) return;
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: item,
+            start: 'top 90%',
+            end: 'top 70%',
+            scrub: true,
+          },
+        })
+        .from(item, fadeElement());
+    });
+    // hero panel
+    gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: '[h-hero-panel]',
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true,
+        },
+      })
+      .fromTo('[h-hero-image-front]', { y: '-2%' }, { y: '2%' }, 0);
+
+    // color panel
+    gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: '[h-color-panel]',
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true,
+        },
+      })
+      .to('[h-color-image]', { yPercent: -25 }, 0);
+
+    // feature image parallax
+    gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: '[h-feature-1-image]',
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true,
+        },
+      })
+      .fromTo('[h-feature-1-image-front]', { yPercent: -5 }, { yPercent: 5, duration: 1 });
+    gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: '[h-feature-2-image]',
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true,
+        },
+      })
+      .fromTo(
+        '[h-feature-2-image-front]',
+        { xPercent: 0, rotateZ: 0, yPercent: 0 },
+        { xPercent: -6, rotateZ: 5, yPercent: -6, duration: 1 }
+      );
   };
 
   const graphScroll = function (isMobile) {
@@ -468,13 +557,13 @@ document.addEventListener('DOMContentLoaded', function () {
       .timeline({
         scrollTrigger: {
           trigger: section,
-          start: 'top 50%',
-          end: 'top 5%',
+          start: !isMobile ? 'top 80%' : 'top bottom',
+          end: !isMobile ? 'top 5%' : 'bottom 20%',
           scrub: true,
         },
       })
-      .from('[feature-3-number] ', horizElement())
-      .from('[feature-3-title] .line', headingFade(), '<.5');
+      .from('[feature-3-number] ', fadeElement())
+      .from('[feature-3-title] .line', fadeHeading(), '<.5');
     //animate bars from height in webflow to fill screen
     let tl2 = gsap.timeline({
       scrollTrigger: {
@@ -545,7 +634,7 @@ document.addEventListener('DOMContentLoaded', function () {
           scrub: 0.5,
         },
       })
-      .from(title, headingFade())
+      .from(title, fadeHeading())
       .from(line, { width: 0, duration: 1, ease: 'power1.out' }, '<.5')
       .from(
         spans,
@@ -581,8 +670,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     ///////////
     // Stickers TL
-
     // create the final state
+    Flip.killFlipsOf(stickers);
     stickers.forEach((item) => item.classList.add('is-final'));
     // save that final state
     const state = Flip.getState([stickers], {
@@ -590,12 +679,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     // revert to original state
     stickers.forEach((item) => item.classList.remove('is-final'));
-
     // animate with Flip
     const tl = Flip.to(state, {
       ease: 'none',
       absolute: true,
-      scale: true,
       spin: false,
       scrollTrigger: {
         trigger: section,
@@ -616,12 +703,12 @@ document.addEventListener('DOMContentLoaded', function () {
         .timeline({
           scrollTrigger: {
             trigger: item,
-            start: 'top bottom',
-            end: 'bottom 95%',
+            start: 'top 90%',
+            end: 'top 60%',
             scrub: 0.5,
           },
         })
-        .from(text.lines, headingFade(), '<.5');
+        .from(text.lines, fadeHeading(), '<.5');
     });
   };
 
@@ -684,7 +771,9 @@ document.addEventListener('DOMContentLoaded', function () {
           setTrackHeights();
           horizontalScroll();
         }
-
+        if (isMobile) {
+          horizontalScrollMobile();
+        }
         if (!reduceMotion) {
           fadeHeadingsIn();
           graphScroll();
@@ -697,7 +786,8 @@ document.addEventListener('DOMContentLoaded', function () {
   gsapInit();
   window.addEventListener('resize', function () {
     // gsapInit();
-    ScrollTrigger.refresh();
+    ScrollTrigger.update();
+    artistLedScroll();
   });
   refreshScrollTriggerItems.forEach(function (item) {
     item.addEventListener('click', function () {
