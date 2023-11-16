@@ -4,7 +4,7 @@ const { random } = require('gsap');
 
 document.addEventListener('DOMContentLoaded', function () {
   // Comment out for production
-  console.log('Local Script Loaded');
+  // console.log('Local Script Loaded');
 
   //////////////////////////////
   //LENIS Smoothscroll
@@ -104,6 +104,91 @@ document.addEventListener('DOMContentLoaded', function () {
   const horizontalTrack = '[horizontal-el="track"]';
   const horizontalStickyEl = '[horizontal-el="sticky"]';
   const refreshScrollTriggerItems = gsap.utils.toArray('[refresh-scroll]');
+  const loadComponent = document.querySelector('[load-component]');
+  const loadBars = gsap.utils.toArray('[load-bar]');
+  const loadLogo = document.querySelector('[load-logo]');
+  const links = document.querySelectorAll('a');
+
+  ///////////////////////////////
+  //Page Load Animation
+  const pageLoad = function () {
+    // Code that runs on pageload
+    let tl = gsap.timeline({});
+    tl.to(loadLogo, {
+      yPercent: -150,
+      duration: 0.4,
+      delay: 0.5,
+      ease: 'power1.out',
+    });
+    tl.to(loadBars, {
+      height: '0%',
+      stagger: {
+        amount: 0.2,
+        duration: 0.6,
+        ease: 'power1.out',
+        from: 'random',
+      },
+      onComplete: () => {
+        gsap.set(loadComponent, { display: 'none' });
+      },
+    });
+  };
+  pageLoad();
+
+  // Page Transition
+  links.forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      if (!loadComponent || !loadLogo || loadBars.length === 0) return;
+
+      let parentPrevent = this.closest('[prevent-transition]');
+      let preventTransition = false;
+      if (parentPrevent) {
+        preventTransition = attr(false, parentPrevent.getAttribute('prevent-transition'));
+      }
+
+      if (
+        this.hostname === window.location.host &&
+        this.href.indexOf('#') === -1 &&
+        this.target !== '_blank' &&
+        preventTransition === false
+      ) {
+        e.preventDefault();
+        let destination = this.getAttribute('href');
+        let tl = gsap.timeline({});
+        tl.set(loadComponent, { display: 'flex' });
+        tl.fromTo(
+          loadBars,
+          {
+            height: '0%',
+          },
+          {
+            height: '100%',
+            stagger: {
+              amount: 0.2,
+              duration: 0.6,
+              ease: 'power1.out',
+              from: 'random',
+            },
+          }
+        );
+        tl.fromTo(
+          loadLogo,
+          {
+            yPercent: 110,
+          },
+          {
+            yPercent: 0,
+            duration: 0.4,
+            ease: 'power1.out',
+          },
+          '<.2'
+        );
+        setTimeout(function () {
+          window.location = destination;
+        }, 1200);
+      }
+    });
+  });
 
   //////////////////////////////
   //Reusable tweens
@@ -128,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function () {
       delay: props?.delay ?? 0,
       opacity: props?.opacity ?? 0,
       ease: props?.opacity ?? 'power1.out',
-      stagger: { each: 0.3, from: 'start' },
+      stagger: { each: props?.stagger ?? 0.3, from: 'start' },
     };
     return tween;
   };
@@ -161,9 +246,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
   //////////////////////////////
   //Utility Functions
-  const splitText = function (text) {
+  const splitText = function (text, includeChars = false) {
+    if (!includeChars) {
+      typeSplit = new SplitType(text, {
+        types: 'lines, words',
+      });
+    }
     typeSplit = new SplitType(text, {
-      types: 'lines, words',
+      types: 'lines, words, chars',
     });
     return typeSplit;
   };
@@ -179,6 +269,89 @@ document.addEventListener('DOMContentLoaded', function () {
 
   //////////////////////////////
   //GSAP Animations
+  const homeLoad = function () {
+    const name = document.querySelector('[hero-name]');
+    const title = document.querySelector('[hero-title]');
+    const arrow = document.querySelector('[hero-arrow]');
+    const button = document.querySelector('[hero-button]');
+    const image = document.querySelector('[hero-image]');
+    const nav = document.querySelector('[nav]');
+    const bgLines = gsap.utils.toArray('.section_hero .background_line');
+    //check if elements exist
+    if (!name || !title || !arrow || !button || !image || !nav) return;
+    //check if page is scrolled down skip animation
+    if (window.scrollY >= '300') return;
+    // console.log(window.scrollY);
+    const nameSplit = splitText(name);
+    const titleSplit = splitText(title);
+    let tl = gsap
+      .timeline({
+        delay: 1.2,
+      })
+      .from(nameSplit.chars, headingFade({ duration: 0.6, stagger: 0.1 }))
+      .fromTo(
+        arrow,
+        {
+          scale: 0.5,
+          opacity: 0,
+        },
+        {
+          scale: 1,
+          duration: 0.4,
+          opacity: 1,
+          ease: 'power1.out',
+        },
+        '<.4'
+      )
+      .from(titleSplit.lines, headingFade({ duration: 0.6 }), '<.2')
+      .from(
+        button,
+        {
+          x: '24px',
+          duration: 0.4,
+          opacity: 0,
+          ease: 'power1.out',
+        },
+        '<.4'
+      )
+      .from(
+        image,
+        {
+          y: '64px',
+          duration: 0.8,
+          opacity: 0,
+          ease: 'power2.out',
+        },
+        '<.2'
+      )
+      .fromTo(
+        bgLines,
+        {
+          height: '0%',
+        },
+        {
+          height: '100%',
+          stagger: { each: 0.2, duration: 1.2, from: 'start' },
+          ease: 'power1.inOut',
+        },
+        0.6
+      )
+      .fromTo(
+        nav,
+        {
+          // yPercent: -110,
+          opacity: 0,
+        },
+        {
+          // yPercent: 0,
+          duration: 0.6,
+          opacity: 1,
+          ease: 'power1.out',
+        },
+        0.2
+      );
+  };
+
   const horizontalScroll = function () {
     const section = document.querySelector(horizontalSection);
     const track = document.querySelector(horizontalTrack);
@@ -217,7 +390,8 @@ document.addEventListener('DOMContentLoaded', function () {
           scrub: true,
         },
       })
-      .to('[h-hero-image]', { x: '25%' }, 0);
+      .fromTo('[h-hero-image-back]', { x: '0' }, { x: '25%' }, 0)
+      .fromTo('[h-hero-image-front]', { x: '-1%' }, { x: '26%' }, 0);
 
     // name panel
     splitText(document.querySelector('[h-name-title]'));
@@ -348,18 +522,18 @@ document.addEventListener('DOMContentLoaded', function () {
   };
 
   const artTypeScroll = function () {
-    const trigger = document.querySelector('[art-type-trigger]');
+    const component = document.querySelector('[art-type-component]');
     const title = document.querySelector('[art-type-title]');
     const line = document.querySelector('[art-type-line]');
     const spans = gsap.utils.toArray('.art-types_h3-span-wrap');
 
-    if (!trigger || !line || !title || spans.length === 0) return;
+    if (!component || !line || !title || spans.length === 0) return;
     //animate spans from 0 to set height in Webflow
     splitText(title);
     let tl = gsap
       .timeline({
         scrollTrigger: {
-          trigger: trigger,
+          trigger: component,
           start: 'top bottom',
           end: 'bottom 95%',
           scrub: 0.5,
@@ -497,14 +671,14 @@ document.addEventListener('DOMContentLoaded', function () {
       (context) => {
         let { isMobile, isTablet, isDesktop, reduceMotion } = context.conditions;
         // run animation functions
+        homeLoad();
+        artTypeScroll();
+        artistLedScroll();
         if (isDesktop || isTablet) {
           setTrackHeights();
           horizontalScroll();
         }
 
-        artTypeScroll();
-
-        artistLedScroll();
         if (!reduceMotion) {
           fadeHeadingsIn();
           graphScroll();
@@ -517,6 +691,7 @@ document.addEventListener('DOMContentLoaded', function () {
   gsapInit();
   window.addEventListener('resize', function () {
     gsapInit();
+    ScrollTrigger.refresh();
   });
   refreshScrollTriggerItems.forEach(function (item) {
     item.addEventListener('click', function () {
