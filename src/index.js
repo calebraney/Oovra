@@ -441,7 +441,7 @@ document.addEventListener('DOMContentLoaded', function () {
         { xPercent: -8, rotateZ: 5, yPercent: -8, duration: 2 },
         '<'
       )
-      .fromTo('[h-feature-1-image-front]', { xPercent: -5 }, { xPercent: 5, duration: 7 }, 4);
+      .fromTo('[h-feature-1-image-front]', { xPercent: -10 }, { xPercent: 10, duration: 7 }, 4);
   };
 
   const horizontalScrollMobile = function () {
@@ -529,7 +529,7 @@ document.addEventListener('DOMContentLoaded', function () {
           scrub: true,
         },
       })
-      .fromTo('[h-feature-1-image-front]', { yPercent: -5 }, { yPercent: 5, duration: 1 });
+      .fromTo('[h-feature-1-image-front]', { yPercent: -8 }, { yPercent: 8, duration: 1 });
     gsap
       .timeline({
         scrollTrigger: {
